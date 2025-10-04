@@ -1,0 +1,4 @@
+username,password,full_name,role
+admin,admin123,Admin User,admin
+teacher1,pass123,Dr. Singh,teacher
+sarbjot,2580,Sarbjot Kumar,student

@@ -1,0 +1,8 @@
+Flask
+Flask-SQLAlchemy
+mysql-connector-python
+Flask-Login
+opencv-python
+face_recognition
+numpy
+python-dotenv
