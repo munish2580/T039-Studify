@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Weekly Quiz Status</title>
+</head>
+<body>
+    <h1>Weekly Quiz Activation</h1>
+    {% if status and status.is_active %}
+        <p>The weekly quiz is currently <strong>Active</strong>.</p>
+        <form method="post">
+            <button type="submit" name="action" value="deactivate">Deactivate Weekly Quiz</button>
+        </form>
+    {% else %}
+        <p>The weekly quiz is currently <strong>Inactive</strong>.</p>
+        <form method="post">
+            <button type="submit" name="action" value="activate">Activate Weekly Quiz</button>
+        </form>
+    {% endif %}
+    <a href="{{ url_for('teacher_dashboard') }}">Back to Dashboard</a>
+</body>
+</html>

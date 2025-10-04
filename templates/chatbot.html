@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}AI Chatbot{% endblock %}
+{% block content %}
+<div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">AI Chatbot</h1>
+    <div id="chat-window" class="bg-gray-800 p-4 rounded h-96 overflow-y-auto mb-4 text-white">
+        <!-- Chat messages will appear here -->
+    </div>
+    <form id="chat-form" class="flex">
+        <input type="text" id="user-input" class="flex-grow p-2 rounded-l bg-gray-700 text-white" placeholder="Type your message..." autocomplete="off" required />
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 rounded-r">Send</button>
+    </form>
+</div>
+
+<script>
+    const chatWindow = document.getElementById('chat-window');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+
+    function appendMessage(sender, message) {
+        const messageElem = document.createElement('div');
+        messageElem.classList.add('mb-2');
+        if (sender === 'user') {
+            messageElem.classList.add('text-right');
+            messageElem.innerHTML = `<span class="inline-block bg-blue-600 rounded px-3 py-1">${message}</span>`;
+        } else {
+            messageElem.classList.add('text-left');
+            messageElem.innerHTML = `<span class="inline-block bg-gray-700 rounded px-3 py-1">${message}</span>`;
+        }
+        chatWindow.appendChild(messageElem);
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const message = userInput.value.trim();
+        if (!message) return;
+
+        appendMessage('user', message);
+        userInput.value = '';
+        userInput.disabled = true;
+
+        try {
+            const response = await fetch('{{ url_for("chatbot_message") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message })
+            });
+            const data = await response.json();
+            if (data.response) {
+                appendMessage('bot', data.response);
+            } else if (data.error) {
+                appendMessage('bot', 'Error: ' + data.error);
+            }
+        } catch (error) {
+            appendMessage('bot', 'Error: Could not reach server.');
+        } finally {
+            userInput.disabled = false;
+            userInput.focus();
+        }
+    });
+</script>
+{% endblock %}

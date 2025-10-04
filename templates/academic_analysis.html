@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Academic Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Academic Performance Analysis</h1>
+
+    <h2>Attendance</h2>
+    <canvas id="attendanceChart" width="400" height="200"></canvas>
+
+    <h2>Quiz Scores Over Time</h2>
+    <canvas id="quizScoresChart" width="400" height="200"></canvas>
+
+    <h2>Academic Marks Over Time</h2>
+    <canvas id="academicMarksChart" width="400" height="200"></canvas>
+
+    <a href="{{ url_for('student_dashboard') }}">Back to Dashboard</a>
+
+    <script>
+        // Attendance Pie Chart
+        const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+        const attendanceChart = new Chart(attendanceCtx, {
+            type: 'pie',
+            data: {
+                labels: Object.keys({{ attendance_data|tojson }}),
+                datasets: [{
+                    data: Object.values({{ attendance_data|tojson }}),
+                    backgroundColor: ['#4CAF50', '#F44336']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Attendance Distribution' }
+                }
+            }
+        });
+
+        // Quiz Scores Line Chart
+        const quizScoresCtx = document.getElementById('quizScoresChart').getContext('2d');
+        const quizScoresChart = new Chart(quizScoresCtx, {
+            type: 'line',
+            data: {
+                labels: [...Array({{ quiz_scores|length }}).keys()].map(i => i + 1),
+                datasets: [{
+                    label: 'Quiz Scores',
+                    data: {{ quiz_scores|tojson }},
+                    borderColor: '#2196F3',
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Quiz Scores Over Time' }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100 }
+                }
+            }
+        });
+
+        // Academic Marks Bar Chart
+        const academicMarksCtx = document.getElementById('academicMarksChart').getContext('2d');
+        const academicMarksChart = new Chart(academicMarksCtx, {
+            type: 'bar',
+            data: {
+                labels: [...Array({{ academic_marks|length }}).keys()].map(i => i + 1),
+                datasets: [{
+                    label: 'Academic Marks',
+                    data: {{ academic_marks|tojson }},
+                    backgroundColor: '#FFC107'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Academic Marks Over Time' }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100 }
+                }
+            }
+        });
+    </script>
+            type: 'pie',
+            data: {
+                labels: Object.keys({{ attendance_data|tojson }}),
+                datasets: [{
+                    data: Object.values({{ attendance_data|tojson }}),
+                    backgroundColor: ['#4CAF50', '#F44336']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Attendance Distribution' }
+                }
+            }
+        });
+
+        // Quiz Scores Line Chart
+        const quizScoresCtx = document.getElementById('quizScoresChart').getContext('2d');
+        const quizScoresChart = new Chart(quizScoresCtx, {
+            type: 'line',
+            data: {
+                labels: {{ quiz_scores|length|range|list }},
+                datasets: [{
+                    label: 'Quiz Scores',
+                    data: {{ quiz_scores|tojson }},
+                    borderColor: '#2196F3',
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Quiz Scores Over Time' }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100 }
+                }
+            }
+        });
+
+        // Academic Marks Bar Chart
+        const academicMarksCtx = document.getElementById('academicMarksChart').getContext('2d');
+        const academicMarksChart = new Chart(academicMarksCtx, {
+            type: 'bar',
+            data: {
+                labels: {{ academic_marks|length|range|list }},
+                datasets: [{
+                    label: 'Academic Marks',
+                    data: {{ academic_marks|tojson }},
+                    backgroundColor: '#FFC107'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'top' },
+                    title: { display: true, text: 'Academic Marks Over Time' }
+                },
+                scales: {
+                    y: { beginAtZero: true, max: 100 }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

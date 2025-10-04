@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{{ url_for('dashboard') }}" class="text-xl font-bold text-white">Dashboard</a>
+            <div>
+                <span class="text-gray-300 mr-4">Welcome, {{ session.username }}!</span>
+                <a href="{{ url_for('logout') }}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        {% if session.role in ['admin', 'hod'] %}
+            <h1 class="text-3xl font-bold mb-6">Admin & HOD Dashboard</h1>
+
+            <div class="bg-gray-800 rounded-xl p-6">
+                <h2 class="text-2xl font-semibold mb-4">Student Overview</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="border-b border-gray-600">
+                            <tr>
+                                <th class="p-3">Student ID</th>
+                                <th class="p-3">Name</th>
+                                <th class="p-3">Attendance (%)</th>
+                                <th class="p-3">Avg. Score (%)</th>
+                                <th class="p-3">Risk Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            <tr class="border-b border-gray-700 
+                                {% if student.risk_level == 'High' %} bg-red-900/50 hover:bg-red-900/70
+                                {% elif student.risk_level == 'Medium' %} bg-yellow-900/50 hover:bg-yellow-900/70
+                                {% else %} hover:bg-gray-700/50 {% endif %}">
+                                
+                                <td class="p-3">{{ student.id }}</td>
+                                <td class="p-3 font-medium">{{ student.name }}</td>
+                                <td class="p-3">{{ student.attendance }}</td>
+                                <td class="p-3">{{ student.avg_score }}</td>
+                                <td class="p-3">
+                                    <span class="px-2 py-1 rounded-full text-xs font-semibold
+                                        {% if student.risk_level == 'High' %} bg-red-500 text-white
+                                        {% elif student.risk_level == 'Medium' %} bg-yellow-500 text-gray-900
+                                        {% else %} bg-green-500 text-white {% endif %}">
+                                        {{ student.risk_level }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="5" class="p-4 text-center text-gray-500">No student data available.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        {% elif session.role == 'chatbot' %}
+            <h1 class="text-3xl font-bold mb-6 text-center">AI Chatbot Dashboard</h1>
+            <p class="text-center text-gray-400 mb-8">Manage educational content and bot interactions.</p>
+            <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="bg-gray-800 p-8 rounded-xl text-center">
+                    <h2 class="text-2xl font-bold mb-3">Quiz Management</h2>
+                    <p class="text-gray-400 mb-4">Generate and manage quizzes for students.</p>
+                    <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Generate Quizzes</a>
+                </div>
+                <div class="bg-gray-800 p-8 rounded-xl text-center">
+                    <h2 class="text-2xl font-bold mb-3">Chatbot Interactions</h2>
+                    <p class="text-gray-400 mb-4">Review and test the student support chatbot.</p>
+                    <a href="#" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg">Test Chatbot</a>
+                </div>
+            </div>
+
+        {% else %}
+             <h1 class="text-3xl font-bold mb-6">Welcome, {{ session.username }}!</h1>
+             <p>This is your dashboard.</p>
+        {% endif %}
+    </div>
+{% endblock %}

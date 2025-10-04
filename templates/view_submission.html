@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}View Submissions{% endblock %}
+
+{% block content %}
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{{ url_for('teacher_dashboard') }}" class="text-xl font-bold text-white">Back to Dashboard</a>
+        </div>
+    </nav>
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-2">Submissions for: <span class="text-blue-400">{{ assignment.title }}</span></h1>
+        <p class="text-gray-400 mb-6">Here you can view and grade student submissions.</p>
+
+        <div class="bg-gray-800 rounded-xl p-6">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="border-b border-gray-600">
+                        <tr>
+                            <th class="p-3">Student Name</th>
+                            <th class="p-3">Submitted At</th>
+                            <th class="p-3">Current Marks</th>
+                            <th class="p-3">Enter Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub in submissions %}
+                        <tr class="border-b border-gray-700">
+                            <td class="p-3 font-medium">{{ sub.student.full_name }}</td>
+                            <td class="p-3">{{ sub.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td class="p-3 font-bold">{{ sub.marks }} / 100</td>
+                            <td class="p-3">
+                                <form action="{{ url_for('grade_submission', submission_id=sub.id) }}" method="POST" class="flex items-center gap-2">
+                                    <input type="number" name="marks" min="0" max="100" class="bg-gray-700 p-1 rounded-lg text-white w-24" placeholder="e.g., 85" required>
+                                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded-lg text-sm">Save Grade</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="4" class="p-4 text-center text-gray-500">No submissions for this assignment yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

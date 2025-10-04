@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{{ url_for('admin_dashboard') }}" class="text-xl font-bold text-white">Admin Dashboard</a>
+            <div>
+                <a href="{{ url_for('view_complaints') }}" class="text-gray-300 hover:text-white mr-4">View Complaints</a>
+                <span class="text-gray-300 mr-4">Welcome, {{ current_user.username }}!</span>
+                <a href="{{ url_for('logout') }}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6">Platform Overview</h1>
+
+        <div class="bg-red-900/50 border border-red-700 rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-4 text-red-200">High-Risk Students Highlight</h2>
+            {% if at_risk_students %}
+                <ul class="list-disc list-inside">
+                {% for student in at_risk_students %}
+                    <li class="p-2 text-red-100">{{ student.full_name }} - (Risk Score: {{ "%.2f"|format(student.risk_score) }})</li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-gray-400">No students are currently at high risk.</p>
+            {% endif %}
+        </div>
+
+        <div class="bg-gray-800 rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Add New User</h2>
+            <form action="{{ url_for('add_user') }}" method="POST" class="grid md:grid-cols-5 gap-4 items-end">
+                <input name="full_name" placeholder="Full Name" class="bg-gray-700 p-2 rounded-lg text-white w-full" required>
+                <input name="username" placeholder="Username" class="bg-gray-700 p-2 rounded-lg text-white w-full" required>
+                <input name="password" placeholder="Password" type="password" class="bg-gray-700 p-2 rounded-lg text-white w-full" required>
+                <select name="role" class="bg-gray-700 p-2 rounded-lg text-white w-full">
+                    <option value="student">Student</option>
+                    <option value="teacher">Teacher</option>
+                </select>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg w-full">Add User</button>
+            </form>
+        </div>
+
+        <div class="bg-gray-800 rounded-xl p-6">
+            <h2 class="text-2xl font-semibold mb-4">All Students Analysis</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="border-b border-gray-600">
+                        <tr>
+                            <th class="p-3">Full Name</th>
+                            <th class="p-3">Risk Level</th>
+                            <th class="p-3">Risk Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in all_students %}
+                        <tr class="border-b border-gray-700 hover:bg-gray-700/50">
+                            <td class="p-3 font-medium">{{ student.full_name }}</td>
+                            <td class="p-3">
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold
+                                    {% if student.risk_level == 'High' %} bg-red-500 text-white
+                                    {% elif student.risk_level == 'Medium' %} bg-yellow-500 text-gray-900
+                                    {% else %} bg-green-500 text-white {% endif %}">
+                                    {{ student.risk_level }}
+                                </span>
+                            </td>
+                            <td class="p-3">{{ "%.2f"|format(student.risk_score) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

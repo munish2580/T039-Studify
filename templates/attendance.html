@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Mark Attendance{% endblock %}
+
+{% block content %}
+<div class="container mx-auto p-6 text-center">
+    <h1 class="text-3xl font-bold mb-4">Face Recognition Attendance</h1>
+    <p class="text-gray-400 mb-6">Position your face in the center of the frame. The system will scan automatically.</p>
+
+    <div class="relative w-full max-w-2xl mx-auto bg-gray-800 rounded-lg shadow-lg overflow-hidden border-2 border-gray-700">
+        <video id="video" width="640" height="480" autoplay muted playsinline class="w-full h-auto"></video>
+        <canvas id="canvas" width="640" height="480" class="hidden"></canvas>
+    </div>
+    
+    <div id="status" class="mt-6 text-xl font-semibold h-8 transition-colors duration-300">Initializing camera...</div>
+</div>
+
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const statusDiv = document.getElementById('status');
+    let recognitionInterval;
+    let isRequestInProgress = false;
+
+    // Access the webcam
+    async function setupCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            video.addEventListener('loadeddata', () => {
+                // Start trying to recognize a face every 3 seconds once the video is playing
+                recognitionInterval = setInterval(captureAndRecognize, 3000);
+            });
+        } catch (err) {
+            console.error("Error accessing webcam: ", err);
+            statusDiv.textContent = "Error: Could not access webcam.";
+            statusDiv.classList.add("text-red-500");
+        }
+    }
+
+    async function captureAndRecognize() {
+        // Don't send a new request if one is already in progress
+        if (isRequestInProgress) {
+            return;
+        }
+        
+        isRequestInProgress = true;
+        statusDiv.textContent = "Scanning for face...";
+        statusDiv.className = "mt-6 text-xl font-semibold text-yellow-400";
+
+        // Draw the current video frame to the canvas
+        context.drawImage(video, 0, 0, 640, 480);
+        
+        // Convert the canvas image to a Base64 data URL
+        const imageData = canvas.toDataURL('image/jpeg');
+
+        try {
+            // Send the image data to the backend API
+            const response = await fetch("{{ url_for('api_mark_attendance') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ image: imageData }),
+            });
+
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                statusDiv.textContent = `Attendance Marked for: ${result.names.join(', ')}`;
+                statusDiv.className = "mt-6 text-xl font-semibold text-green-400";
+                // Stop scanning after successful recognition
+                clearInterval(recognitionInterval);
+            } else {
+                statusDiv.textContent = result.message || "No known student recognized.";
+                statusDiv.className = "mt-6 text-xl font-semibold text-red-500";
+            }
+        } catch (error) {
+            console.error('Error sending image to server:', error);
+            statusDiv.textContent = "Error connecting to server.";
+        } finally {
+            isRequestInProgress = false;
+        }
+    }
+
+    setupCamera();
+</script>
+{% endblock %}

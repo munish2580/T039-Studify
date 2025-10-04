@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Leaderboard{% endblock %}
+
+{% block content %}
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{{ url_for('student_dashboard') }}" class="text-xl font-bold text-white">Student Dashboard</a>
+            <div>
+                <span class="text-gray-300 mr-4">Welcome, {{ current_user.student.full_name }}!</span>
+                <a href="{{ url_for('logout') }}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6">Weekly Quiz Leaderboard</h1>
+
+        <div class="bg-gray-800 rounded-xl p-6">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b border-gray-700">
+                        <th class="py-2 px-4">Rank</th>
+                        <th class="py-2 px-4">Username</th>
+                        <th class="py-2 px-4">Score</th>
+                        <th class="py-2 px-4">Reward</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in top_users %}
+                    <tr class="border-b border-gray-700">
+                        <td class="py-2 px-4">{{ loop.index }}</td>
+                        <td class="py-2 px-4">{{ user.username }}</td>
+                        <td class="py-2 px-4">{{ user.score }}</td>
+                        <td class="py-2 px-4">{{ user.reward }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-6">
+            <a href="{{ url_for('student_dashboard') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg">Back to Dashboard</a>
+        </div>
+    </div>
+{% endblock %}

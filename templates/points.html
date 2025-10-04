@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Weekly Quiz Points{% endblock %}
+{% block content %}
+<div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">Weekly Quiz Points</h1>
+    <div class="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <h2 class="text-xl font-semibold mb-4">Team Rankings</h2>
+        <ul>
+            {% for team, point in points.items() %}
+                <li class="mb-2">{{ team }}: {{ point }} points</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

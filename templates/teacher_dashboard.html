@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard{% endblock %}
+
+{% block content %}
+    <nav class="bg-gray-800 p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{{ url_for('teacher_dashboard') }}" class="text-xl font-bold text-white">Teacher Dashboard</a>
+            <div>
+                <span class="text-gray-300 mr-4">Welcome, {{ current_user.teacher.full_name }}!</span>
+                <a href="{{ url_for('logout') }}" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6">Your Dashboard</h1>
+
+        <div class="bg-gray-800 rounded-xl p-6 mb-8 text-center border border-blue-500 shadow-lg">
+            <h2 class="text-2xl font-semibold mb-4">Attendance Session</h2>
+            {% if active_session %}
+                <p class="text-green-400 mb-4">An attendance session is currently ACTIVE.</p>
+                <form action="{{ url_for('stop_attendance_session') }}" method="POST">
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg text-lg">Stop Session</button>
+                </form>
+            {% else %}
+                <p class="text-gray-400 mb-4">No session is active. Click below to start a new 3-minute session for your students.</p>
+                <form action="{{ url_for('start_attendance_session') }}" method="POST">
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg">Start 3-Minute Session</button>
+                </form>
+            {% endif %}
+        </div>
+
+        <div class="bg-gray-800 rounded-xl p-6 mb-8">
+            <h2 class="text-2xl font-semibold mb-4">Create New Assignment</h2>
+            <form action="{{ url_for('create_assignment') }}" method="POST" class="flex items-end gap-4">
+                <div class="flex-grow">
+                    <label for="title" class="block text-gray-400 mb-1">Assignment Title</label>
+                    <input name="title" id="title" placeholder="e.g., Physics Chapter 5 Problems" class="bg-gray-700 p-2 rounded-lg text-white w-full" required>
+                </div>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">Create Assignment</button>
+            </form>
+        </div>
+
+        <div class="bg-gray-800 rounded-xl p-6">
+            <h2 class="text-2xl font-semibold mb-4">Your Assignments</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="border-b border-gray-600">
+                        <tr>
+                            <th class="p-3">Title</th>
+                            <th class="p-3">Submissions</th>
+                            <th class="p-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in assignments %}
+                        <tr class="border-b border-gray-700 hover:bg-gray-700/50">
+                            <td class="p-3 font-medium">{{ assignment.title }}</td>
+                            <td class="p-3">{{ assignment.submissions.count() }}</td>
+                            <td class="p-3">
+                                <a href="{{ url_for('view_submissions', assignment_id=assignment.id) }}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-1 px-3 rounded-lg text-sm">View & Grade</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr><td colspan="3" class="p-4 text-center text-gray-500">You have not created any assignments yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

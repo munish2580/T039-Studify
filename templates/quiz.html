@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Quiz{% endblock %}
+{% block content %}
+<div class="container mx-auto p-6">
+    <h1 class="text-3xl font-bold mb-6">Quiz</h1>
+    {% if quiz %}
+        {% for item in quiz %}
+            <div class="bg-gray-800 rounded-lg p-4 border border-gray-700 mb-4">
+                <h2 class="text-xl font-semibold mb-2">{{ item.question }}</h2>
+                <form method="POST" action="#">
+                    {% for option in item.options %}
+                        <label class="block mb-2">
+                            <input type="radio" name="answer" value="{{ option }}" class="mr-2">
+                            {{ option }}
+                        </label>
+                    {% endfor %}
+                    <button type="submit" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Submit Answer</button>
+                </form>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No quiz available.</p>
+    {% endif %}
+</div>
+{% endblock %}

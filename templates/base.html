@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Student Success Platform{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Custom Tailwind Config
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['Poppins', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-gray-100 antialiased">
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div id="flash-container" class="absolute top-5 right-5 z-50">
+            {% for category, message in messages %}
+                {% if category == 'success' %}
+                    <div class="bg-green-500 text-white p-3 rounded-lg shadow-lg mb-2">
+                {% elif category == 'danger' %}
+                    <div class="bg-red-500 text-white p-3 rounded-lg shadow-lg mb-2">
+                {% else %}
+                    <div class="bg-blue-500 text-white p-3 rounded-lg shadow-lg mb-2">
+                {% endif %}
+                    {{ message }}
+                    </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <script>
+        // Is container ko select karein
+        const flashContainer = document.getElementById('flash-container');
+        
+        // Agar container मौजूद hai, to use 5 second ke baad gayab kar dein
+        if (flashContainer) {
+          setTimeout(() => {
+            // Dheere se fade out karein
+            flashContainer.style.transition = 'opacity 0.5s ease';
+            flashContainer.style.opacity = '0';
+            // Fade out hone ke baad, use poori tarah se hata dein
+            setTimeout(() => {
+              flashContainer.style.display = 'none';
+            }, 500); // 0.5 second, transition se match karta hua
+          }, 5000); // 5000ms = 5 seconds
+        }
+    </script>
+</body>
+</html>
